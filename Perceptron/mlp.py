@@ -11,7 +11,7 @@ def sigmoid_der(x):
 class Neuron:
     def __init__(self, inputs_no):
         self.inputs_no = inputs_no
-        self.set_weights( [np.random.uniform(0,1) for x in range(0, self.inputs_no) ] )
+        self.set_weights( [np.random.uniform(-1,1) for x in range(0, self.inputs_no) ] )
     
     def set_weights(self, weights):
         self.weights = weights
@@ -39,5 +39,3 @@ class MLP:
 
             #output layer
             self.layers += [NeuronLayer(self.outputs_no, self.neurons_in_hl)]
-
-
