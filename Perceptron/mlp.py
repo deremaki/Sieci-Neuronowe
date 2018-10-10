@@ -22,7 +22,7 @@ class Neuron:
 class NeuronLayer:
     def __init__(self, neurons_no, inputs_no):
         self.neurons_no = neurons_no
-        self.neurons = [Neuron(inputs_no) for _ in range(0,self.neurons_no)]
+        self.neurons = [Neuron(inputs_no) for _ in range(0, self.neurons_no)]
 
 class MLP:
     def __init__(self, inputs_no, outputs_no, neurons_in_hl, hidden_layers_no):
@@ -39,5 +39,5 @@ class MLP:
 
             #output layer
             self.layers += [NeuronLayer(self.outputs_no, self.neurons_in_hl)]
-        
-    
+
+
