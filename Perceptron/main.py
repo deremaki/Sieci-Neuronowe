@@ -5,6 +5,7 @@ import os
 from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
+from visualizations import *
 
 #from mlp import MLP
 
@@ -56,9 +57,11 @@ def main(argv):
     if(regression):
         print("not ready")
     else: #classification
-        #for i in range(n):
+        
         clf = MLPClassifier(hidden_layer_sizes=(10,10), activation='logistic', solver='lbfgs')
-        clf.fit(train_X, train_Y)
+
+        #for i in range(n):
+        clf.fit(train_X, train_Y) #partial fit for each train set iteration to visualize
         print("fitted")
         predicted_Y = clf.predict(test_X)
 
@@ -69,8 +72,9 @@ def main(argv):
                 correctly_classified += 1
         accuracy = correctly_classified/len(predicted_Y)*100
 
-
         print('Accuracy: ', accuracy, '%')
+
+        draw_classification(test_elements, clf)
 
 
 if(__name__ == "__main__"):
