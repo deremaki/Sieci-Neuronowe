@@ -2,9 +2,11 @@ import numpy as np
 import csv
 import sys
 import os
+from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 
-from mlp import MLP
+#from mlp import MLP
 
 def read_csv(filePath):
     elements = []
@@ -12,13 +14,13 @@ def read_csv(filePath):
         rows = csv.reader(csvfile, delimiter=',')
         rows.__next__()
         for row in rows:
-            elements.append(row)
+            elements.append([float(i) for i in row])
     return elements
 
 def get_inputs(elements):
     inputs = []
     for row in elements:
-            [inputs.append(x) for x in row[:-1]]
+            [inputs.append(row[:-1])]
     return inputs
 
 def get_outputs(elements):
@@ -29,28 +31,47 @@ def get_outputs(elements):
 
 def main(argv):
      
+    np.random.seed(123815)
+
   #  trainFilePath = argv[1]
   #  testFilePath = argv[2]
-    trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.100.csv"
-    testFilePath = os.getcwd() + "\data\\regression\data.activation.test.100.csv"
+    trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.100.csv"
+    testFilePath = os.getcwd() + "\data\\classification\data.simple.test.100.csv"
 
-    regression = True
+    #true - regression, false - classification
+    regression = False
 
 
     train_elements = read_csv(trainFilePath)
     test_elements = read_csv(testFilePath)
 
-    inputs = get_inputs(train_elements)
-    outputs = get_outputs(train_elements)
+    train_X = get_inputs(train_elements)
+    train_Y = get_outputs(train_elements)
 
-    n = train_elements.count
+    test_X = get_inputs(test_elements)
+    test_Y = get_outputs(test_elements)
+
+    n = len(train_elements)
 
     if(regression):
         print("not ready")
     else: #classification
-        print("not ready")
-        
+        #for i in range(n):
+        clf = MLPClassifier(hidden_layer_sizes=(10,10), activation='logistic', solver='lbfgs')
+        clf.fit(train_X, train_Y)
+        print("fitted")
+        predicted_Y = clf.predict(test_X)
+
+        correctly_classified = 0
+
+        for i in range(n):
+            if(test_Y[i] == predicted_Y[i]):
+                correctly_classified += 1
+        accuracy = correctly_classified/len(predicted_Y)*100
 
 
-if __name__ == "__main__":
+        print('Accuracy: ', accuracy, '%')
+
+
+if(__name__ == "__main__"):
     main(sys.argv[1:])
