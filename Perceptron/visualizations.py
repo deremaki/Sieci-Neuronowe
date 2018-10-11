@@ -7,7 +7,16 @@ from matplotlib.colors import ListedColormap
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-def draw_classification(train_elements_array, classifier):
+
+def draw_regression(test_X, test_Y, predict_Y):
+
+    plt.plot(test_X, test_Y, 'r-', test_X, predict_Y, 'b--')
+
+    plt.title("MLP Regression")
+    plt.show()
+
+
+def draw_classification(test_elements_array, classifier):
     colors=['r', 'b', 'g']
     markers = [u'x', u'+', u'*']
     h = .02
@@ -26,7 +35,7 @@ def draw_classification(train_elements_array, classifier):
     plt.figure()
     plt.pcolormesh(xx, yy, z, cmap=cmap_light)
 
-    for e in train_elements_array:
+    for e in test_elements_array:
         plt.scatter(e[0], e[1], marker=markers[int(e[2])%3-1], cmap=cmap_bold, s=15, c=colors[int(e[2])%3-1])
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)

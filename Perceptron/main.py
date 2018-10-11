@@ -35,12 +35,16 @@ def main(argv):
     np.random.seed(123815)
 
   #  trainFilePath = argv[1]
-  #  testFilePath = argv[2]
-    trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.100.csv"
-    testFilePath = os.getcwd() + "\data\\classification\data.simple.test.100.csv"
+  #  testFilePath = argv[2]v
+     
+    trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.100.csv"
+    testFilePath = os.getcwd() + "\data\\regression\data.activation.test.100.csv"
+
+  #  trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.100.csv"
+  #  testFilePath = os.getcwd() + "\data\\classification\data.simple.test.100.csv"
 
     #true - regression, false - classification
-    regression = False
+    regression = True
 
 
     train_elements = read_csv(trainFilePath)
@@ -55,7 +59,23 @@ def main(argv):
     n = len(train_elements)
 
     if(regression):
-        print("not ready")
+        clf = MLPRegressor(hidden_layer_sizes=(10,10), activation='logistic', solver='lbfgs')
+
+        #for i in range(n):
+        clf.fit(train_X, train_Y) #partial fit for each train set iteration to visualize
+        print("fitted")
+
+        predicted_Y = clf.predict(test_X)
+
+        error = 0
+        for i in range(n):
+            error += abs(test_Y[i]-predicted_Y[i])
+        mean_error = error/n
+
+        print('Mean error: ', mean_error)
+
+        draw_regression(test_X, test_Y, predicted_Y)
+
     else: #classification
         
         clf = MLPClassifier(hidden_layer_sizes=(10,10), activation='logistic', solver='lbfgs')
