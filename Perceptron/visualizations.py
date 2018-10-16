@@ -3,6 +3,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+from nn_visualization import *
 
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
@@ -41,3 +42,15 @@ def draw_classification(test_elements_array, classifier):
     plt.ylim(y_min, y_max)
     plt.title("MLP Classification")
     plt.show()
+
+
+def draw_perceptron(iteration, old_weights, weights):
+    
+    network = []
+    for i in range(len(weights)):
+        network.append(len(weights[i]))
+
+    network.append(len(weights[len(weights)-1][0])) #output layer
+
+    perceptron = DrawNN(network, iteration, old_weights, weights)
+    perceptron.draw()
