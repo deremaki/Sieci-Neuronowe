@@ -38,21 +38,21 @@ def main(argv):
     #trainFilePath = argv[1]
     #testFilePath = argv[2]
      
-    #trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.100.csv"
-    #testFilePath = os.getcwd() + "\data\\regression\data.activation.test.100.csv"
+    trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.500.csv"
+    testFilePath = os.getcwd() + "\data\\regression\data.activation.test.500.csv"
 
-    trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.1000.csv"
-    testFilePath = os.getcwd() + "\data\\classification\data.simple.test.1000.csv"
+    #trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.1000.csv"
+    #testFilePath = os.getcwd() + "\data\\classification\data.simple.test.1000.csv"
 
     #true - regression, false - classification
-    regression = False
+    regression = True
 
     perceptron_visualization = False
     regression_visualization = True
     classification_visualization = True
 
-    max_iterations = 500
-    visualize_every_iteration = 500
+    max_iterations = 200
+    visualize_every_iteration = 100
 
     #'logistic', 'identity', 'tanh' or 'relu'
     activation = 'logistic'
@@ -91,7 +91,7 @@ def main(argv):
         predicted_Y = clf.predict(test_X)
 
         error = 0
-        for i in range(n):
+        for i in range(len(test_Y)):
             error += abs(test_Y[i]-predicted_Y[i])
         mean_error = error/n
 
@@ -124,7 +124,7 @@ def main(argv):
 
         correctly_classified = 0
 
-        for i in range(n):
+        for i in range(len(test_Y)):
             if(test_Y[i] == predicted_Y[i]):
                 correctly_classified += 1
         accuracy = correctly_classified/len(predicted_Y)*100
