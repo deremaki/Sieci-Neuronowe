@@ -32,24 +32,27 @@ def get_outputs(elements):
     return outputs
 
 def main(argv):
-     
+    
     np.random.seed(123815)
 
-  #  trainFilePath = argv[1]
-  #  testFilePath = argv[2]
+    #trainFilePath = argv[1]
+    #testFilePath = argv[2]
      
-    # trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.100.csv"
-    # testFilePath = os.getcwd() + "\data\\regression\data.activation.test.100.csv"
+    #trainFilePath = os.getcwd() + "\data\\regression\data.activation.train.100.csv"
+    #testFilePath = os.getcwd() + "\data\\regression\data.activation.test.100.csv"
 
-    trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.100.csv"
-    testFilePath = os.getcwd() + "\data\\classification\data.simple.test.100.csv"
+    trainFilePath = os.getcwd() + "\data\\classification\data.simple.train.1000.csv"
+    testFilePath = os.getcwd() + "\data\\classification\data.simple.test.1000.csv"
 
     #true - regression, false - classification
     regression = False
 
-    perceptron_visualization = True
+    perceptron_visualization = False
     regression_visualization = True
     classification_visualization = True
+
+    max_iterations = 500
+    visualize_every_iteration = 500
 
 
     train_elements = read_csv(trainFilePath)
@@ -64,18 +67,16 @@ def main(argv):
     n = len(train_elements)
 
     if(regression):
-        clf = MLPRegressor(hidden_layer_sizes=(5), activation='logistic', solver='lbfgs')
+        clf = MLPRegressor(hidden_layer_sizes=(5), activation='logistic', solver='sgd', max_iter=max_iterations)
 
         if(perceptron_visualization == True):
             print("visualize")
             weights = []
 
-            for i in range(n):
-                X = np.asarray(train_X[i]).reshape(1, -1)
-                Y = np.ravel(np.asarray(train_Y[i]).reshape(1, -1))
-                clf.fit(X, Y)
+            for i in range(max_iterations):
+                clf.partial_fit(train_X, train_Y)
                 
-                if(i%99==0):
+                if(i%visualize_every_iteration==0 or i==max_iterations-1):
                     old_weights = copy.deepcopy(weights)
                     weights = copy.deepcopy(clf.coefs_)
                     draw_perceptron(i, old_weights, weights)
@@ -90,31 +91,28 @@ def main(argv):
             error += abs(test_Y[i]-predicted_Y[i])
         mean_error = error/n
 
-        print('Mean error: ', mean_error)
+        print('Mean error: ' + str(mean_error) + " after " + str(clf.n_iter_) + " iterations")
 
         if(regression_visualization):
             draw_regression(test_X, test_Y, predicted_Y)
 
     else: #classification
         
-        clf = MLPClassifier(hidden_layer_sizes=(5), activation='logistic', solver='lbfgs')
+        clf = MLPClassifier(hidden_layer_sizes=(5), activation='logistic', solver='sgd', max_iter=max_iterations)
 
         if(perceptron_visualization == True):
             print("visualize")
             weights = []
 
-            for i in range(n):
-                X = np.asarray(train_X[i]).reshape(1, -1)
-                Y = np.ravel(np.asarray(train_Y[i]).reshape(1, -1))
-                clf.fit(X, Y)
+            for i in range(max_iterations):
+                clf.partial_fit(train_X, [int(i) for i in train_Y], classes=np.unique(train_Y))
                 
-                if(i%99==0):
+                if(i%visualize_every_iteration==0 or i==max_iterations-1):
                     old_weights = copy.deepcopy(weights)
                     weights = copy.deepcopy(clf.coefs_)
                     draw_perceptron(i, old_weights, weights)
-
-        else:    
-            clf.fit(train_X, train_Y)
+        else:          
+            clf.fit(train_X, [int(i) for i in train_Y])
 
 
         print("fitted")
@@ -127,7 +125,7 @@ def main(argv):
                 correctly_classified += 1
         accuracy = correctly_classified/len(predicted_Y)*100
 
-        print('Accuracy: ', accuracy, '%')
+        print("Accuracy: " + str(accuracy) + "%" + " after " + str(clf.n_iter_) + " iterations")
 
         if(classification_visualization):
             draw_classification(test_elements, clf)

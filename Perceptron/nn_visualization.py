@@ -3,7 +3,25 @@ from math import cos, sin, atan
 import numpy as np
 from scipy import ndimage
 
-number = 1
+def get_normalized_width(min_x, max_x, x):
+    return (x-min_x)/(max_x-min_x)
+
+def min_max_weights(weight):
+    mx = 0
+    mn = 0
+    for i in range(len(weight)):
+        if(i==0):
+            mx = weight[i].max()
+            mn = weight[i].min()
+        else:
+            if(weight[i].max() > mx):
+                mx = weight[i].max()
+            if(weight[i].min() < mn):
+                mn = weight[i].min()
+    return mn, mx
+
+
+
 
 class Neuron():
     def __init__(self, x, y):
@@ -16,7 +34,7 @@ class Neuron():
 
 
 class Layer():
-    def __init__(self, network, number_of_neurons, number_of_neurons_in_widest_layer, weights, old_weights, layer_no):
+    def __init__(self, network, number_of_neurons, number_of_neurons_in_widest_layer, weights, old_weights, layer_no, min_weight, max_weight):
         self.vertical_distance_between_layers = 10
         self.horizontal_distance_between_neurons = 8
         self.neuron_radius = 1
@@ -26,6 +44,8 @@ class Layer():
         self.neurons = self.__intialise_neurons(number_of_neurons)
         self.weights = weights
         self.old_weights = old_weights
+        self.min_weight = min_weight
+        self.max_weight = max_weight
         self.layer_no = layer_no
 
     def __intialise_neurons(self, number_of_neurons):
@@ -61,12 +81,17 @@ class Layer():
         current_weight = self.previous_layer.weights[n2i, n1i]
         line.set_color("black")
         line.set_label("test")
-        line.set_linewidth((current_weight+1))
+        width = get_normalized_width(self.min_weight, self.max_weight, current_weight)
+        width = width * 2 + 0.25
+        line.set_linewidth(width)
         plt.gca().add_line(line)
         label = ""
         if (len(self.old_weights)!=0 or (len(self.previous_layer.old_weights)!=0)):
             difference = self.previous_layer.weights[n2i, n1i] - self.previous_layer.old_weights[n2i, n1i]
-            label = ("%.2f" % current_weight) + "\n(%.4f)" % difference
+            if(difference > 0):
+                label = ("%.2f" % current_weight) + "\n(+%.4f)" % difference
+            else:
+                label = ("%.2f" % current_weight) + "\n(%.4f)" % difference
             if(difference>0):
                 line.set_color("green")
             if(difference<0):
@@ -100,8 +125,8 @@ class NeuralNetwork():
         self.layertype = 0
         self.iter_no = iter_no
 
-    def add_layer(self, number_of_neurons, weights, old_weights, layer_no ):
-        layer = Layer(self, number_of_neurons, self.number_of_neurons_in_widest_layer, weights, old_weights, layer_no)
+    def add_layer(self, number_of_neurons, weights, old_weights, layer_no, min_weight, max_weight ):
+        layer = Layer(self, number_of_neurons, self.number_of_neurons_in_widest_layer, weights, old_weights, layer_no, min_weight, max_weight)
         self.layers.append(layer)
 
     def draw(self):
@@ -122,16 +147,19 @@ class DrawNN():
         self.iter_no = iter_no
         self.old_weights = old_weights
         self.weights = weights
+        min_w, max_w = min_max_weights(weights)
+        self.max_weight = max_w
+        self.min_weight = min_w
 
     def draw( self ):
         widest_layer = max( self.neural_network )
         network = NeuralNetwork( widest_layer, self.iter_no )
         for i in range(len(self.neural_network)):
             if(i==len(self.neural_network)-1):
-                    network.add_layer(self.neural_network[i], [],[], i)
+                    network.add_layer(self.neural_network[i], [],[], i, self.min_weight, self.max_weight)
             else:
                 if(len(self.old_weights)==0):
-                    network.add_layer(self.neural_network[i], self.weights[i], [], i)
+                    network.add_layer(self.neural_network[i], self.weights[i], [], i, self.min_weight, self.max_weight)
                 else:
-                    network.add_layer(self.neural_network[i], self.weights[i], self.old_weights[i], i)
+                    network.add_layer(self.neural_network[i], self.weights[i], self.old_weights[i], i, self.min_weight, self.max_weight)
         network.draw()
