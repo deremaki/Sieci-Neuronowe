@@ -54,6 +54,10 @@ def main(argv):
     max_iterations = 500
     visualize_every_iteration = 500
 
+    #'logistic', 'identity', 'tanh' or 'relu'
+    activation = 'logistic'
+    hidden_layer_sizes = (5,5)
+
 
     train_elements = read_csv(trainFilePath)
     test_elements = read_csv(testFilePath)
@@ -67,7 +71,7 @@ def main(argv):
     n = len(train_elements)
 
     if(regression):
-        clf = MLPRegressor(hidden_layer_sizes=(5), activation='logistic', solver='sgd', max_iter=max_iterations)
+        clf = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver='sgd', max_iter=max_iterations)
 
         if(perceptron_visualization == True):
             print("visualize")
@@ -98,7 +102,7 @@ def main(argv):
 
     else: #classification
         
-        clf = MLPClassifier(hidden_layer_sizes=(5), activation='logistic', solver='sgd', max_iter=max_iterations)
+        clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver='sgd', max_iter=max_iterations)
 
         if(perceptron_visualization == True):
             print("visualize")
